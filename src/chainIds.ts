@@ -24,6 +24,7 @@ export function getM0ChainId(chain: Chain, network: Network): number {
     Plume: 98866,
     Polygon: 137,
     Sei: 1329,
+    Moca: 2288,
     // Testnets
     ArbitrumSepolia: 421614,
     BaseSepolia: 84532,

@@ -20,9 +20,9 @@ import {
   isRedeemed,
   isSourceFinalized,
   isSourceInitiated,
+  routes,
   signSendWait,
 } from "@wormhole-foundation/sdk-connect";
-import * as routes from "@wormhole-foundation/sdk-connect/routes";
 import { register as registerNttDefinitions } from "@wormhole-foundation/sdk-definitions-ntt";
 import { register as registerEvmNtt } from "@wormhole-foundation/sdk-evm-ntt";
 import { register as registerSolanaNtt } from "@wormhole-foundation/sdk-solana-ntt";
@@ -108,7 +108,7 @@ export class M0AutomaticRoute<N extends Network>
   static supportedChains(network: Network): Chain[] {
     switch (network) {
       case "Mainnet":
-        return ["Ethereum", "Arbitrum","Base", "Solana"];
+        return ["Ethereum", "Arbitrum", "Base", "Moca", "Solana"];
       case "Testnet":
         return [
           "Sepolia",
@@ -126,6 +126,7 @@ export class M0AutomaticRoute<N extends Network>
       case "Ethereum":
       case "Arbitrum":
       case "Base":
+      case "Moca":
       case "Sepolia":
       case "ArbitrumSepolia":
       case "BaseSepolia":

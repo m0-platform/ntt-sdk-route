@@ -16,7 +16,7 @@ import "@wormhole-foundation/sdk-evm-ntt";
 import evmLoader from "@wormhole-foundation/sdk/evm";
 import solanaLoader from "@wormhole-foundation/sdk/solana";
 import "@wormhole-foundation/sdk-solana-ntt";
-import { M0AutomaticRoute } from "../src/m0AutomaticRoute";
+import { m0AutomaticRoute } from "../src/m0AutomaticRoute";
 
 const wM = {
   Solana: "mzeroXDoBpRVhnEXBra27qzAMdxgpWVY3DzQW7xMVJp",
@@ -53,7 +53,7 @@ async function bridge(params: {
   // get signers from env
   const srcSigner = await getSigner(src);
   const dstSigner = await getSigner(dst);
-  const resolver = wh.resolver([M0AutomaticRoute]);
+  const resolver = wh.resolver([m0AutomaticRoute()]);
 
   const tr = await routes.RouteTransferRequest.create(wh, {
     source: Wormhole.tokenId(params.sourceChain, params.sourceToken),

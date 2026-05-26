@@ -1,5 +1,11 @@
 # @m0-foundation/ntt-sdk-route
 
+## 0.1.1
+
+### Patch Changes
+
+- 4ea26e5: use 600,000 gas limit for EVM chains, add Moca
+
 ## 0.1.0
 
 ### Minor Changes

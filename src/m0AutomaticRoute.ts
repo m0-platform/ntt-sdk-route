@@ -524,7 +524,8 @@ export class M0AutomaticRoute<N extends Network>
     destinationChain: Chain,
     amount: bigint,
   ): Promise<NttWithExecutor.Quote> {
-    const executorRoute = nttExecutorRoute(getExecutorConfig(this.wh.network));
+    const config = getExecutorConfig(this.wh.network);
+    const executorRoute = nttExecutorRoute(config);
     const routeInstance = new executorRoute(this.wh);
 
     const resolveM = (chain: Chain) => {
@@ -541,8 +542,19 @@ export class M0AutomaticRoute<N extends Network>
       ),
     });
 
+    // Gas overrides are passed both via config (sdk-route-ntt 5.x) and via options (>= 8, untyped here), since the host's resolved SDK version decides which one is read.
+    const gasOverride =
+      config.referrerFee?.perTokenOverrides?.[destinationChain]?.[
+        resolveM(destinationChain)
+      ];
+    const options = {
+      gasLimit: gasOverride?.gasLimit,
+      msgValue: gasOverride?.msgValue,
+    } as unknown as NttExecutorRoute.Options;
+
     const validated = await routeInstance.validate(transferRequest, {
       amount: amount.toString(),
+      options,
     });
     if (!validated.valid) {
       throw new Error(`Validation failed: ${validated.error.message}`);

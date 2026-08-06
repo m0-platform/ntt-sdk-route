@@ -1,5 +1,11 @@
 # @m0-foundation/ntt-sdk-route
 
+## 0.1.2
+
+### Patch Changes
+
+- ba9a420: pass executor gas overrides via options for sdk-route-ntt >= 6
+
 ## 0.1.1
 
 ### Patch Changes

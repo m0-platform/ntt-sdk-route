@@ -1,5 +1,11 @@
 # @m0-foundation/ntt-sdk-route
 
+## 0.2.0
+
+### Minor Changes
+
+- 2a8724b: remove M from automatic routes
+
 ## 0.1.2
 
 ### Patch Changes

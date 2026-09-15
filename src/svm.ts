@@ -31,6 +31,7 @@ import {
   unpackMint,
 } from "@solana/spl-token";
 import BN from "bn.js";
+import { assertSupportedPath } from "./tokens";
 
 type extensionToken = {
   destinations: { [chainId: number]: Set<string> };
@@ -75,6 +76,7 @@ export class SvmRouter {
     destinationChain: Chain,
     recipient: string,
   ): Promise<TransactionInstruction> {
+    await assertSupportedPath(this, sourceToken, destinationToken, destinationChain);
     const extensions = await this.getSupportedExtensions();
     const extension = extensions[sourceToken];
 
@@ -125,6 +127,9 @@ export class SvmRouter {
     this.tokens = {};
 
     for (const ext of swapGlobal.whitelistedExtensions) {
+      if (ext.mint.toBase58() === "mzerojk9tg56ebsrEAhfkyc9VgKjTW2zDqp6C5mhjzH") {
+        continue;
+      }
       this.tokens[ext.mint.toBase58()] = {
         destinations: {},
         extensionProgram: ext.programId,
@@ -140,10 +145,12 @@ export class SvmRouter {
     for (const path of paths) {
       const { destinationChainId } = path.account;
       for (const { sourceMint, destinationToken } of path.account.paths) {
-        const dests = this.tokens[sourceMint.toBase58()].destinations;
-        (dests[destinationChainId] ??= new Set()).add(
-          SvmRouter.bytes32toHex(destinationToken),
-        );
+        const extension = this.tokens[sourceMint.toBase58()];
+        const destination = SvmRouter.bytes32toHex(destinationToken);
+        if (!extension ||
+          destination.toLowerCase() === "0x866a2bf4e572cbcf37d5071a7a58503bfb36be1b"
+        ) continue;
+        (extension.destinations[destinationChainId] ??= new Set()).add(destination);
       }
     }
 

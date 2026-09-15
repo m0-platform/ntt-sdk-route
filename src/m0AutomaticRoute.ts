@@ -54,6 +54,7 @@ import { getExecutorConfig } from "./executor";
 import { SvmRouter } from "./svm";
 import { EvmRouter } from "./evm";
 import { getM0ChainId } from "./chainIds";
+import { assertSupportedPath } from "./tokens";
 
 type Op = NttRoute.Options;
 type Tp = routes.TransferParams<Op>;
@@ -204,6 +205,20 @@ export class M0AutomaticRoute<N extends Network>
   ): Promise<Vr> {
     const options = params.options ?? this.getDefaultOptions();
 
+    try {
+      const router = chainToPlatform(request.fromChain.chain) === "Solana"
+        ? await SvmRouter.fromChainContext(request.fromChain)
+        : await EvmRouter.fromChainContext(request.fromChain);
+      await assertSupportedPath(
+        router,
+        canonicalAddress(request.source.id),
+        canonicalAddress(request.destination.id),
+        request.toChain.chain,
+      );
+    } catch (error) {
+      return { valid: false, params, error: error as Error };
+    }
+
     const parsedAmount = amount.parse(params.amount, request.source.decimals);
     // The trimmedAmount may differ from the parsedAmount if the parsedAmount includes dust
     const trimmedAmount = NttRoute.trimAmount(
@@ -340,6 +355,7 @@ export class M0AutomaticRoute<N extends Network>
     const chainId = BigInt(getM0ChainId(ctx.chain, ctx.network));
 
     const router = await EvmRouter.fromChainContext(ctx);
+    await assertSupportedPath(router, sourceToken, destinationToken, destination.chain);
 
     const approval = await router.getSpendApproval(
       amount,

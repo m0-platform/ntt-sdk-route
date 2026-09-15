@@ -11,6 +11,7 @@ import { evmPortalProvider } from "./artifacts";
 import { getM0ChainId } from "./chainIds";
 import { NttWithExecutor } from "@wormhole-foundation/sdk-definitions-ntt";
 import { PublicKey } from "@solana/web3.js";
+import { assertSupportedPath } from "./tokens";
 
 const ERC20_ABI = [
   "function allowance(address owner, address spender) view returns (uint256)",
@@ -43,9 +44,13 @@ export class EvmRouter {
   }
 
   async getSupportedDestinationTokens(
-    _sourceToken: string,
+    sourceToken: string,
     toChain: Chain,
   ): Promise<TokenId[]> {
+    if (!this.TOKENS.some((token) =>
+      token.toLowerCase() === sourceToken.toLowerCase(),
+    )) return [];
+
     if (toChain === "Solana") {
       return [
         {
@@ -86,6 +91,7 @@ export class EvmRouter {
     recipient: string,
     quote: NttWithExecutor.Quote,
   ): Promise<ContractTransaction> {
+    await assertSupportedPath(this, sourceToken, destinationToken, destinationChain);
     const portal = evmPortalProvider(this.provider);
 
     const recipientBytes32 = EvmRouter.stringToBytes32(recipient);

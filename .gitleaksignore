@@ -1,0 +1,4 @@
+# Reviewed false alarms. Each line is file:rule:start-line.
+# A new secret on a different line still fails the scan.
+scripts/bridge.ts:generic-api-key:35
+.env.example:generic-api-key:1
